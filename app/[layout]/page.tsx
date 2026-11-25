@@ -7,10 +7,20 @@ import { Gemini } from "@/components/examples/gemini";
 import { Grok } from "@/components/examples/grok";
 import { Perplexity } from "@/components/examples/perplexity";
 const layouts = { base: Base, claude: Claude, gemini: Gemini, grok: Grok, perplexity: Perplexity };
-export default async function Page({ params, searchParams }: {params: Promise<{layout: string}>; searchParams: Promise<{preview?: string}>}) {
-  const {layout} = await params;
-  const {preview} = await searchParams;
+
+export function generateStaticParams() {
+  return Object.keys(layouts).map((layout) => ({ layout }));
+}
+
+export default async function Page({ params }: { params: Promise<{ layout: string }> }) {
+  const { layout } = await params;
   const Component = layouts[layout as keyof typeof layouts];
   if (!Component) notFound();
-  return <MotionShell layout={layout} preview={preview === "1"}><DemoRuntimeProvider><Component /></DemoRuntimeProvider></MotionShell>;
+  return (
+    <MotionShell layout={layout}>
+      <DemoRuntimeProvider>
+        <Component />
+      </DemoRuntimeProvider>
+    </MotionShell>
+  );
 }
